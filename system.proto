@@ -1,0 +1,140 @@
+syntax = "proto3"; // Utilizamos la version 3 de protocol buffers
+
+
+// Definición del servicio ProxyService
+service ProxyService {
+    // El cliente envia un mensaje WriteRequest y el proxy responde con WriteResponse
+    // Un método para realizar escritura: Write
+    rpc Write(WriteRequest) returns (WriteResponse);
+
+    // El cliente envia un mensaje ReadRequest y el proxy responde con ReadResponse
+    // Un método para realizar lectura: Read
+    rpc Read(ReadRequest) returns (ReadResponse);
+
+    // Envio peticion a follower para saber que esta vivo y lo guardo
+    rpc RegisterFollower(RegisterRequest) returns (RegisterResponse);
+
+    // Nuevo método para actualizar la identidad del líder
+    rpc UpdateLeader(LeaderInfo) returns (LeaderUpdateResponse);
+
+    // streaming del proxy [latidos]
+    rpc HeartBeats(Beats) returns (stream WriteResponse); // quitar
+
+    // El cliente streaming [le manda señales de conexion al proxy]
+    rpc ClienteVivo(stream WriteRequest) returns (LatidosRecibidos); // quitar
+
+    // Los dos streaming [se mandan ambos señales de vida]
+    rpc Bidireccional(stream WriteRequest) returns (stream WriteResponse); // quitar
+    
+}
+
+// Mensaje de solicitud de escritura
+message WriteRequest {
+    string name = 1; // Aqui mandamos el nombre del cliente que quiere escribir
+    string data = 2;  // Aqui mandamos datos que queremos escribir
+}
+// Mensaje de respuesta de escritura
+message WriteResponse {
+    string message = 1; // El proxy/leader responde con un mensaje de confirmación
+}
+
+// Mensaje de solicitud de lectura
+message ReadRequest {
+    int32 index = 1;
+    string query = 2; // Aquí el cliente manda la consulta de lo que quiere leer
+}
+// Mensaje de respuesta de lectura
+message ReadResponse {
+    string data = 1; // El proxy responde con los datos que el cliente solicitó
+}
+
+// Mensaje para enviar información del nuevo líder
+message LeaderInfo {
+    string leader_address = 1;  // Dirección/puerto del nuevo líder
+}
+// Mensaje de respuesta al actualizar el líder
+message LeaderUpdateResponse {
+    string message = 1;
+}
+
+// HeartBeats/latidos
+message Beats {
+    string id = 1; // Conciencia del cliente (si esta activo)
+    int32 beats = 2;  // Numero de latidos solicitados
+}
+message LatidosRecibidos{
+    string message = 1; // Mensaje de confirmacion
+    repeated WriteRequest request = 2; // Solicitudes de escritura recibidas
+}
+
+
+// Servicio escritura en el log del lider
+service LeaderService {
+
+    // Recibe peticion del proxy de escritura
+    rpc Write(WriteRequest) returns (WriteResponse);
+
+    // Envio peticion a follower para saber que esta vivo y lo guardo
+    rpc RegisterFollower(RegisterRequest) returns (RegisterResponse);
+
+}
+// Registro con el Lider y el Proxy
+message RegisterRequest {
+    string address = 1;
+    string awareness = 2;
+}
+message RegisterResponse {
+    string message = 1;
+}
+
+
+// Servicio de lectura del log de cada follower}
+service FollowerService {
+    
+    // Recibe peticion del proxy de escritura
+    rpc Write(WriteRequest) returns (WriteResponse);
+
+    // Recibe peticion del proxy de lectura
+    rpc Read(ReadRequest) returns (ReadResponse);
+
+    // Recibe solicitud del líder para replicar la entrada del log
+    rpc Replicate(ReplicationRequest) returns (ReplicationResponse);
+
+    //Recibe latidos periodicos del lider}
+    rpc ReceiveHeartBeats(HeartBeat) returns (HeartBeatsResponse);
+
+    //Pide votos a todos los followers
+    rpc VoteRequest(LenLog) returns (Vote);
+
+}
+//Candidatura
+message LenLog {
+    int32 len_log = 1;
+}
+message Vote {
+    int32 vote = 1;
+}
+
+// Mensajes de HeartBeat-Latidos
+message HeartBeat {
+    string beats_request = 1;
+    bool leader_state = 2;
+}
+message HeartBeatsResponse {
+    string beats_received = 1;
+}
+
+// Replicacion de datos del lider con sus followers
+// Mensaje de solicitud de replicación
+message ReplicationRequest {
+    string name = 1;
+    int32 term = 2;
+    int32 index = 3;
+    string data = 4; 
+}
+// Mensaje de respuesta de replicación
+message ReplicationResponse {
+    string message = 1;
+    int32 follower_index = 2; // en caso de DESINCRONIZACION - ultimo indice del follower
+    //int32 follower_term = 3; // en caso de DESINCRONIZACION - ultimo term del follower
+}
