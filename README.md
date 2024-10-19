@@ -12,7 +12,7 @@ La coordinación y la consistencia entre los procesos dentro de un sistema distr
 
 ### 1. Descripcion:
 
-Este proyecto intenta resolver algunas principales problematicas que son **Coordinación entre procesos**, **Fallas en los procesos** y **Consistencia en los datos a traves del tiempo** en un **sistema distribuido o aplicación**; Las fallas o problematicas se han solucionado con nuestro propia perspectiva del problema e hicimos nuestro propio algortimo sin necesidad de utilizar librerias, aún asi, se ha intentado abordar inspirandonos en un famoso algoritmo llamado Raft: [text](https://raft.github.io/raft.pdf) el cual nos permitio:
+Este proyecto intenta resolver algunas principales problematicas que son **Coordinación entre procesos**, **Fallas en los procesos** y **Consistencia en los datos a traves del tiempo** en un **sistema distribuido o aplicación**; Las fallas o problematicas se han solucionado con nuestro propia perspectiva del problema e hicimos nuestro propio algortimo sin necesidad de utilizar librerias, aún asi, se ha intentado abordar inspirandonos en un famoso algoritmo llamado Raft: (https://raft.github.io/raft.pdf) el cual nos permitio:
 - *coordinar* los procesos Proxy, Leader y Followers --> mecanismo:(**CONSENSO**)
 - *tolerar caidas* de Leader o Followers --> mecanismo:(**VOTACIÓN DEL LIDER o REVIVIR LIDER/FOLLOWER**)
 - **datos consistentes/persistentes** ya que estan replicados por el sistema en los follower con un --> datos:(**LOG**)
@@ -156,10 +156,10 @@ Oprimir la que quiera hacer: (1/2)
 ```
 
 ### Referencias
-- [text](https://www.youtube.com/watch?v=WB37L7PjI5k)
-- [text](https://raft.github.io/raft.pdf)
-- Visualización de funcionamiento del algoritmo: [text](https://raft.github.io/)
-- Video de youtube del los creadores del **algoritmo Raft**: [text](https://www.youtube.com/watch?v=YbZ3zDzDnrw), [text](https://www.youtube.com/watch?v=vYp4LYbnnW8)
-- [text](https://www.youtube.com/watch?v=IujMVjKvWP4)
+- (https://www.youtube.com/watch?v=WB37L7PjI5k)
+- (https://raft.github.io/raft.pdf)
+- Visualización de funcionamiento del algoritmo: (https://raft.github.io/)
+- Video de youtube del los creadores del **algoritmo Raft**: (https://www.youtube.com/watch?v=YbZ3zDzDnrw), (https://www.youtube.com/watch?v=vYp4LYbnnW8)
+- (https://www.youtube.com/watch?v=IujMVjKvWP4)
 
 
