@@ -28,7 +28,138 @@ Este proyecto intenta resolver algunas principales problematicas que son **Coord
   - **Tolerancia a fallos** en el sistema. En caso de que el proceso ́líder falle, uno y solo uno de los followers asume el rol de líder para asegurar la continuidad del servicio, garantizando la consistencia en la replicación de la base de datos.
   - El nuevo líder asumie su rol sin perder las solicitudes del cliente y sin comprometer la consistencia de los datos.
   - La elección de un nuevo líder es manera automática y coordinada entre los followers restantes, ademas, esta elección es democratica.
-  - Capacidad de **Simulación de fallos** para demostraciones ante caidas de procesos.  
+  - Capacidad de **Simulación de fallos** para demostraciones ante caidas de procesos.
+
 #### 1.2. Aspectos NO Logrados
   - Despliegue en AWS.
   - Caida del Proxy.
+
+### 2. Información general de diseño:
+  - **Diseño**
+    -Cliente **--> envia** peticiones a un **Proxy** (peticiones de **escritura** o **lectura** de la DB).
+    -Proxy **--> reedirige** las peticiones a --> Leader(escritura)/Follower(lectura).
+    -Leader **-->** recibe la petición de escritura, **guarda la informacion en un log/base de datos y replica la información con los followers**.
+    -Follower **-->** recibe la petición de lectura, **accede a los datos que el cliente quiere ver de la base de datos y se los muestra**.
+
+  - **Arquitectura**
+    - **Leader/Follower P2P**: La aplicacion leader no comparte las funcionalidades de la del follower, pero las del follower si tiene sus propias funcionalidades, ademas de las del lider en caso de alguna falla, para el follower poder reemplazarlo.
+    - **Cliente/Servidor**: Cliente hace peticiones a un Proxy el cual es un intermediario entre el cliente y el lider/follower y estos le proporcionan el serivio de escritura/lectura en/de la base de datos, esta relacion podria decirse que es Cliente/Servidor
+
+- **Mejores practicas utilizadas**
+  - **gRPC para Comunicación**: Utilización de gRPC para implementar las interfaces cliente-servidor de manera eficiente, facilitando la comunicación entre nodos.
+  - **Protobuf**: Para la serialización de datos en la comunicación entre nodos, lo que permite transferir estructuras complejas.
+  - **Concurrencia**: El lider/follower utilizan threading para manejar múltiples solicitudes al mismo tiempo o sincronizarse para el tener los datos mas actualizados.
+  - **Resiliencia y Escalabilidad**: Los followers/lideres se unen o se retiran sin generar interrupciones en el servicio
+
+
+## Tecnologias usadas:
+
+- **Python**: Lenguaje de programación.
+- **gRPC**: Permite la comunicación entre nodos.
+- **Protocol Buffers (Protobuf)**: Serializa datos estructurados.
+
+## Estructura del proyecto
+
+```bash
+.
+├── Reinado              
+├── __pycache__                       
+│   ├── node_pb2_grpc.cpython-311.pyc                
+│   └── node_pb2.cpython-311.pyc                
+├── design                       
+│   ├── Arquitectura.png                
+│   └── Estructura del proyecto.pdf               
+├── client.py
+├── proxy.py
+├── leader.py
+├── follower.py
+├── system_pb2_grpc.py
+├── system_pb2_grpc.py
+├── system_pb2.py
+├── node.proto
+└── README.md                    
+```
+
+## Setup e Instalación
+# Ambiente de Desarrollo:
+  - **Lenguaje**: Python 3.9
+  - **Librerías y Paquetes**:
+    - **grpcio** (version 1.39.0)
+    - **protobus** (version 3.17.3)
+    - **threading**: Para la ejecución en paralelo de hilos.
+    - **time**: Para coordinar procesos
+
+### 1. Clonar el repositorio
+
+```bash
+git clone [text](https://github.com/sadsax7/Rey-Derrocado.git)
+cd Reinado
+```
+
+### 2. Instalar python y las dependecias
+- Descargar **python** desde: [text](https://www.python.org/downloads/)
+- **Dependencias**:
+```bash
+pip install grpcio grpcio-tools protobuf
+```
+
+### 3. Compilar archivos generados por **protobuf**
+
+Estando en la ruta del proyecto desde la terminal, ejecutar:
+
+```bash
+cd Reinado
+python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. node.proto
+```
+
+### 4. Ejecutar con el comando:
+
+- **Cliente**
+```bash
+python client.py
+```
+- **ProxyApp**
+```bash
+python proxy.py
+```
+- **Leader/King**
+```bash
+python leader.py
+```
+
+Para ingresar a 'n' follower, asigna un nuevo puerto para cada follower (ejemplo: `50053`, `50054`, .... , `60000`).
+- **Follower**
+```bash
+python follower.py
+```
+puerto --> 50053
+conciencia --> (vivo/muerto)
+
+### 5. Unir a la red otro follower. (Hacer para cada follower que se quiera agregar, pero en distintas terminales)
+
+```bash
+python follower.py
+```
+puerto --> 50054
+conciencia --> (vivo/muerto)
+
+
+### 6. Escritura o Lectura de la base de datos desde el cliente:
+
+Al estar en cualquiera de los clientes creados, surgira el siguiente menú:
+Oprimir la que quiera hacer: (1/2)
+```
+-----------------------------------
+| 1: Operación de escritura       |
+| 2: Operación de lectura         |
+-----------------------------------
+```
+
+### Referencias
+- [text](https://www.youtube.com/watch?v=WB37L7PjI5k)
+- [text](https://raft.github.io/raft.pdf)
+- Visualización de funcionamiento del algoritmo: [text](https://raft.github.io/)
+- Video de youtube del los creadores del **algoritmo Raft**: [text](https://www.youtube.com/watch?v=YbZ3zDzDnrw), [text](https://www.youtube.com/watch?v=vYp4LYbnnW8)
+- [text](https://www.youtube.com/watch?v=IujMVjKvWP4)
+
+
