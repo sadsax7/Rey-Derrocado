@@ -36,10 +36,10 @@ Este proyecto intenta resolver algunas principales problematicas que son **Coord
 
 ### 2. Información general de diseño:
   - **Diseño**
-    -Cliente **--> envia** peticiones a un **Proxy** (peticiones de **escritura** o **lectura** de la DB).
-    -Proxy **--> reedirige** las peticiones a --> Leader(escritura)/Follower(lectura).
-    -Leader **-->** recibe la petición de escritura, **guarda la informacion en un log/base de datos y replica la información con los followers**.
-    -Follower **-->** recibe la petición de lectura, **accede a los datos que el cliente quiere ver de la base de datos y se los muestra**.
+    - Cliente **--> envia** peticiones a un **Proxy** (peticiones de **escritura** o **lectura** de la DB).
+    - Proxy **--> reedirige** las peticiones a --> Leader(escritura)/Follower(lectura).
+    - Leader **-->** recibe la petición de escritura, **guarda la informacion en un log/base de datos y replica la información con los followers**.
+    - Follower **-->** recibe la petición de lectura, **accede a los datos que el cliente quiere ver de la base de datos y se los muestra**.
 
   - **Arquitectura**
     - **Leader/Follower P2P**: La aplicacion leader no comparte las funcionalidades de la del follower, pero las del follower si tiene sus propias funcionalidades, ademas de las del lider en caso de alguna falla, para el follower poder reemplazarlo.
