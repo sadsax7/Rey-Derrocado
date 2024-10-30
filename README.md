@@ -9,6 +9,7 @@ La coordinación y la consistencia entre los procesos dentro de un sistema distr
   - Alejandro Arango Mejía: aarangom1@eafit.edu.co
   - Thomas Rivera Fernández: triveraf@eafit.edu.co
 - **Profesor:** Juan Carlos Montoya Mendoza: jcmontoy@eafit.edu.co
+- **Video explicativo:** https://eafit.sharepoint.com/sites/alejo/_layouts/15/stream.aspx?id=%2Fsites%2Falejo%2FDocumentos%20compartidos%2FGeneral%2FRecordings%2FAlgoritmo%20Raft%2D20241030%5F150820%2DGrabaci%C3%B3n%20de%20la%20reuni%C3%B3n%2Emp4&referrer=StreamWebApp%2EWeb&referrerScenario=AddressBarCopied%2Eview%2E091e07cb%2D426f%2D4a7c%2D905b%2D3400b0920f94
 
 ### 1. Descripcion:
 
